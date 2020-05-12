@@ -1,0 +1,19 @@
+{
+    "name": "enormous-tree",
+    "version": "0.0.8",
+    "scripts": {
+        "build": "../../node_modules/.bin/tsc -p tsconfig.schematics.json && npm run copy:worker",
+        "copy:schemas": "cp --parents schematics/*/schema.json ../../dist/enormous-tree/",
+        "copy:files": "cp --parents -p schematics/*/files/** ../../dist/enormous-tree/",
+        "copy:collection": "cp schematics/collection.json ../../dist/enormous-tree/schematics/collection.json",
+        "copy:worker": "cp source/enormous-tree-worker.js ../../dist/enormous-tree/source/enormous-tree-worker.js",
+        "postbuild": "npm run copy:schemas && npm run copy:files && npm run copy:collection"
+    },
+    "peerDependencies": {
+        "@angular/common": "^9.0.0",
+        "@angular/core": "^9.0.0",
+        "@angular/cdk": "^9.0.0",
+        "rxjs": "^6.4.0"
+    },
+    "schematics": "./schematics/collection.json"
+}

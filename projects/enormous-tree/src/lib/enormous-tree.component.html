@@ -1,0 +1,10 @@
+<cdk-virtual-scroll-viewport [itemSize]="itemHeight">
+    <ng-container *cdkVirtualFor="let node of data.displayList">
+        <ng-container *ngTemplateOutlet="enormousTreeItem; context:{
+            enormousTreeItem:node,
+            enormousTreeToggleItem:toggleItem,
+            enormousTreeCheckItem:checkItem
+        }">
+        </ng-container>
+    </ng-container>
+</cdk-virtual-scroll-viewport>

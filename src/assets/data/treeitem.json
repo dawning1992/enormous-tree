@@ -1,0 +1,33 @@
+[{
+        "treeItemId": "per1",
+        "treeItemName": "欧筅蕎1",
+        "groupIds": [
+            "dep2-2-1",
+            "dep2-1",
+            "dep3"
+        ]
+    },
+    {
+        "treeItemId": "per2",
+        "treeItemName": "欧筅蕎2",
+        "groupIds": [
+            "dep5"
+        ]
+    },
+    {
+        "treeItemId": "per3",
+        "treeItemName": "欧筅蕎3",
+        "groupIds": [
+            "dep2-2-1",
+            "dep2-1",
+            "dep3"
+        ]
+    },
+    {
+        "treeItemId": "per4",
+        "treeItemName": "欧筅蕎4",
+        "groupIds": [
+            "dep2-2-2"
+        ]
+    }
+]

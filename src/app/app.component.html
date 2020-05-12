@@ -1,0 +1,14 @@
+<div class="demo-box">
+    <cc-enormous-tree [dataSource]="dataSource" (treeLoad)="onTreeLoad()" [behavior]="behavior" workerFileUrl="/assets/worker.js" [itemHeight]="36" [enormousTreeItem]="enormousTreeItem" (selectChange)="log($event)" [alias]="{groupId:'id'}">
+    </cc-enormous-tree>
+</div>
+<ng-template #enormousTreeItem let-item="enormousTreeItem" let-toggle="enormousTreeToggleItem" let-check="enormousTreeCheckItem">
+    <div class="test-item" [style.paddingLeft.px]="item.paddingLeft">
+        <!-- <mat-checkbox disableRipple="true" #checkbox color="primary" [checked]="item.checked" (change)="check(item,checkbox.checked)" [indeterminate]="item.indeterminate">
+        </mat-checkbox> -->
+        <mat-checkbox disableRipple="true" #checkbox color="primary" [checked]="item.checked || item.indeterminate" (change)="check(item,item.indeterminate?false:!item.checked)">
+        </mat-checkbox>
+        <i (click)="toggle(item)" *ngIf="item.isGroup">>></i>
+        <span (click)="toggle(item)">{{item.isGroup? item.groupName: item.treeItemName}}【{{item.childCheckedCount}}/{{item.totalChildCount}}】 {{item.checked}}|{{item.indeterminate}}</span>
+    </div>
+</ng-template>

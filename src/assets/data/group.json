@@ -1,0 +1,75 @@
+[{
+        "id": "root",
+        "groupName": "全公司",
+        "childGroupIds": [
+            "dep1",
+            "dep2",
+            "dep3",
+            "dep4",
+            "dep5"
+        ]
+    },
+    {
+        "id": "dep1",
+        "groupName": "部门1"
+    },
+    {
+        "id": "dep2",
+        "groupName": "部门2",
+        "childGroupIds": [
+            "dep2-1",
+            "dep2-2",
+            "dep2-3"
+        ]
+    },
+    {
+        "id": "dep3",
+        "groupName": "部门3"
+    },
+    {
+        "id": "dep4",
+        "groupName": "部门4"
+    },
+    {
+        "id": "dep5",
+        "groupName": "部门5"
+    },
+    {
+        "id": "dep2-1",
+        "groupName": "部门2-1"
+    },
+    {
+        "id": "dep2-2",
+        "groupName": "部门2-2",
+        "childGroupIds": [
+            "dep2-2-1",
+            "dep2-2-2"
+        ]
+    },
+    {
+        "id": "dep2-3",
+        "groupName": "部门2-3",
+        "childGroupIds": [
+            "dep2-3-1"
+        ]
+    },
+    {
+        "id": "dep2-3-1",
+        "groupName": "部门2-3-1"
+    },
+    {
+        "id": "dep2-2-1",
+        "groupName": "部门2-2-1"
+    },
+    {
+        "id": "dep2-2-2",
+        "groupName": "部门2-2-2",
+        "childGroupIds": [
+            "dep2-2-2-1"
+        ]
+    },
+    {
+        "id": "dep2-2-2-1",
+        "groupName": "部门2-2-2-1"
+    }
+]
