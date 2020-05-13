@@ -10,7 +10,7 @@ import {
   EventEmitter
 } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import {  EnormousTreeChackBehaviorConfig, EnormousTreeChackBehaviorDefaultConfig } from './enormous-tree.model';
+import { EnormousTreeChackBehaviorConfig, EnormousTreeChackBehaviorDefaultConfig } from './enormous-tree.model';
 // tslint:disable-next-line: max-line-length
 const workerJsStr = `var groupMap=Object.create(null),treeitemMap=Object.create(null),treeitemSelectedMap=Object.create(null),groupSelectedMap=Object.create(null),alias,behavior={checkGroupAndCheckAllChild:true,uncheckGroupAndUncheckAllChild:true,uncheckChildEffectParentGroup:true};self.onmessage=function(event){var e=event.data;if(e){var data=JSON.parse(e);switch(data.action){case'$$enormousTreeInitTree':handleAllData(data);break;}}};var handleAllData=function(data){var t0=new Date().getTime();alias=data.alias;behavior=data.behavior;createTreeitemCheckedMap(data.selectedTreeitems);createGroupCheckedMap(data.selectedGroups);createGroupMap(data.groupList);createTreeitemMap(data.treeitemList);calculateChildNodeCount();calculateCheckCount();console.info('Enormous Tree:compute tree node dependency use '+(new Date().getTime()-t0)+'ms');self.postMessage(JSON.stringify({code:0,data:{groupMap:groupMap,treeitemMap:treeitemMap}}));};function createTreeitemCheckedMap(arr){(arr||[]).forEach(function(id){treeitemSelectedMap[id]=true;});};function calculateChildNodeCount(){var countGroupChild=function(group){var childCount=0;if(Array.isArray(group.childGroupIds)&&group.childGroupIds.length>0){childCount=group.childGroupIds.length;childCount=group.childGroupIds.reduce(function(pre,x){return pre+countGroupChild(groupMap[x]);},childCount);};return childCount;};var groupAddItem=function(groupId){var group=groupMap[groupId];if(group){group.totalChildCount++;if(group.parentGroupId!=null){groupAddItem(group.parentGroupId);}}};Object.keys(groupMap).forEach(function(groupId){var group=groupMap[groupId];groupMap[groupId].totalChildCount=countGroupChild(group);});Object.keys(treeitemMap).forEach(function(treeitemId){var treeitem=treeitemMap[treeitemId];if(Array.isArray(treeitem.groupIds)&&treeitem.groupIds.length>0){treeitem.groupIds.forEach(function(groupId){groupAddItem(groupId);});}});};function createTreeitemMap(treeitemList){(treeitemList||[]).forEach(function(treeitem){handleAlias(treeitem,alias,'treeItemId');handleAlias(treeitem,alias,'treeItemName');handleAlias(treeitem,alias,'groupIds');treeitem.checked=this.treeitemSelectedMap[treeitem.treeItemId]===true;treeitemMap[treeitem.treeItemId]=treeitem;if(Array.isArray(treeitem.groupIds)&&treeitem.groupIds.length>0){treeitem.groupIds.forEach(function(groupId){var group=groupMap[groupId];if(group){if(group.childTreeitemIds==null){group.childTreeitemIds=[treeitem.treeItemId];}else{group.childTreeitemIds.push(treeitem.treeItemId);}}})}});};function createGroupCheckedMap(groups){(groups||[]).forEach(function(_){groupSelectedMap[_]=true;});};function calculateCheckCount(){Object.keys(treeitemMap).forEach(function(treeItemId){var treeitem=treeitemMap[treeItemId];if(treeitem.checked){if(Array.isArray(treeitem.groupIds)&&treeitem.groupIds.length>0){treeitem.groupIds.forEach(function(parentGroupId){updateParentCheckNum(parentGroupId,1);})}}});if(behavior.checkGroupAndCheckAllChild){Object.keys(groupSelectedMap).forEach(function(_){checkGroup(_);});}};function checkGroup(groupId){var group=groupMap[groupId];if(group){if(group.checked===false){group.checked=true;updateParentCheckNum(group.parentGroupId,1);};var childGroupIds=group.childGroupIds;if(Array.isArray(childGroupIds)&&childGroupIds.length>0){childGroupIds.forEach(function(_){checkGroup(_);});};var childTreeitemIds=group.childTreeitemIds;if(Array.isArray(childTreeitemIds)&&childTreeitemIds.length>0){childTreeitemIds.forEach(function(_){checkTreeItem(_);});}}};function checkTreeItem(treeitemId){var treeItem=treeitemMap[treeitemId];if(treeItem){if(treeItem.checked==false){treeItem.checked=true;if(Array.isArray(treeItem.groupIds)&&treeItem.groupIds.length>0){treeItem.groupIds.forEach(function(parentGroupId){updateParentCheckNum(parentGroupId,1);})}}}};function updateParentCheckNum(parentGroupId,num){var group=groupMap[parentGroupId];if(group){var preCheckStu=group.checked;group.childCheckedCount+=num;if(group.totalChildCount>0){if(group.childCheckedCount===group.totalChildCount){group.checked=true;group.indeterminate=false;if(preCheckStu!=group.checked){this.updateParentCheckNum(group.parentGroupId,num+1)}else{this.updateParentCheckNum(group.parentGroupId,num)}}else{group.indeterminate=true;this.updateParentCheckNum(group.parentGroupId,num)}}}};function createGroupMap(groupList){var parentMap=Object.create(null);var childGroupIdCol=[];(groupList||[]).forEach(function(groupItem){handleAlias(groupItem,alias,'groupId');handleAlias(groupItem,alias,'groupName');handleAlias(groupItem,alias,'childGroupIds');groupItem.parentGroupId=null;groupItem.toggled=false;groupItem.totalChildCount=0;groupItem.childCheckedCount=0;groupItem.checked=false;groupItem.indeterminate=false;groupItem.isGroup=true;groupMap[groupItem.groupId]=groupItem;if(Array.isArray(groupItem.childGroupIds)&&groupItem.childGroupIds.length>0){groupItem.childGroupIds.forEach(function(childGroupId){childGroupIdCol.push(childGroupId);parentMap[childGroupId]=groupItem.groupId;});}else{delete groupItem.childGroupIds;}});(childGroupIdCol).forEach(function(childGroupId){var childGroup=groupMap[childGroupId];if(childGroup){childGroup.parentGroupId=parentMap[childGroupId];}});parentMap=null;childGroupIdCol=null;};function handleAlias(item,alias,aliasName){if(item[aliasName]==null&&alias[aliasName]!=null){item[aliasName]=item[alias[aliasName]];};return item;}`;
 interface EnormousTreeData {
@@ -288,6 +288,9 @@ export class EnormousTreeComponent implements OnInit, OnDestroy, AfterViewInit {
     const t0 = +new Date();
     if ((item as GroupMapItem).isGroup) { // 选了组
       this.checkGroup((item as GroupMapItem).groupId, checked);
+      if (checked === false) {
+        (item as GroupMapItem).indeterminate = false;
+      }
     } else { // 选了Treeitem
       this.checkTreeItem((item as TreeitemMapItem).treeItemId, checked);
     }
@@ -300,7 +303,7 @@ export class EnormousTreeComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   // 选Group
-  private checkGroup(groupId, checked) {
+  private checkGroup(groupId, checked, clearIndeterminate = false) {
     const group = this.groupMap[groupId];
     if (group) {
       if (checked !== group.checked) {
@@ -309,7 +312,7 @@ export class EnormousTreeComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updateParentGroupCheckNum(group.parentGroupId, checked ? 1 : -1);
       }
       if (this.behavior.checkGroupAndCheckAllChild && this.behavior.uncheckGroupAndUncheckAllChild) {
-        this.handleCheckGroupChild(group, checked);
+        this.handleCheckGroupChild(group, checked, !this.behavior.uncheckChildEffectParentGroup);
       } else if (!this.behavior.checkGroupAndCheckAllChild && this.behavior.uncheckGroupAndUncheckAllChild) {
         if (!checked) {
           this.handleCheckGroupChild(group, false);
@@ -319,16 +322,21 @@ export class EnormousTreeComponent implements OnInit, OnDestroy, AfterViewInit {
           this.handleCheckGroupChild(group, true);
         }
       }
+      // console.log(clearIndeterminate,group.groupId,this.behavior.uncheckGroupAndUncheckAllChild)
+      if (clearIndeterminate) {
+        group.indeterminate = false;
+      }
     }
   }
 
 
   // 处理Group子项选中
-  private handleCheckGroupChild(group: GroupMapItem, checked) {
+  private handleCheckGroupChild(group: GroupMapItem, checked, clearIndeterminate = false) {
+    console.log(clearIndeterminate)
     const childGroupIds = group.childGroupIds;
     if (Array.isArray(childGroupIds) && childGroupIds.length > 0) {
       childGroupIds.forEach((childGroupId) => {
-        this.checkGroup(childGroupId, checked);
+        this.checkGroup(childGroupId, checked, clearIndeterminate);
       });
     }
     const childTreeitemIds = group.childTreeitemIds;
