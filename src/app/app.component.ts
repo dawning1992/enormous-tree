@@ -28,27 +28,28 @@ export class AppComponent implements AfterViewInit {
         return {
           groupList: result[0],
           treeitemList: result[1],
-          selectedGroups: ['dep2-2'],
-          selectedTreeitems: ['per4'],
+          selectedGroups: [],
+          selectedTreeitems: [],
           rootGroupId: 'root'
         };
       })
     );
   }
   loop() {
-    this.enormousTree.expandAll(null, 200);
-    setTimeout(() => {
-      this.enormousTree.collapseAll(1, 200);
-    }, 2000);
+    // this.enormousTree.expandAll(null, 200);
+    // setTimeout(() => {
+    //   this.enormousTree.collapseAll(1, 200);
+    // }, 2000);
   }
   onTreeLoad() {
-    console.log(this.enormousTree.getCheckGroup());
-    console.log(this.enormousTree.getIndeterminateGroup());
-    console.log(this.enormousTree.getCheckedTreeItem());
-    this.loop();
-    setInterval(() => {
-      this.loop();
-    }, 5000);
+    this.enormousTree.expandAll();
+    // console.log(this.enormousTree.getCheckGroup());
+    // console.log(this.enormousTree.getIndeterminateGroup());
+    // console.log(this.enormousTree.getCheckedTreeItem());
+    // this.loop();
+    // setInterval(() => {
+    //   this.loop();
+    // }, 5000);
   }
   ngAfterViewInit() {
 

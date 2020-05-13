@@ -363,7 +363,7 @@ export class EnormousTreeComponent implements OnInit, OnDestroy, AfterViewInit {
       if (!this.behavior.uncheckChildEffectParentGroup && num === -1) {
         if (group.totalChildCount > 0) {
           if (group.childCheckedCount === 0) {
-            if (this.behavior.uncheckGroupAndUncheckAllChild) {
+            if (!this.behavior.uncheckGroupAndUncheckAllChild) {
               group.indeterminate = false;
             }
           } else if (group.childCheckedCount > 0) {
