@@ -329,6 +329,20 @@ export class EnormousTreeComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // 只选Group
+  public checkGroupIgnoreChild(groupId, checked, clearIndeterminate = true) {
+    const group = this.groupMap[groupId];
+    if (group) {
+      if (checked !== group.checked) {
+        group.checked = checked;
+        if (clearIndeterminate) {
+          group.indeterminate = false;
+        }
+        this.updateParentGroupCheckNum(group.parentGroupId, checked ? 1 : -1);
+      }
+    }
+  }
+
 
   // 处理Group子项选中
   private handleCheckGroupChild(group: GroupMapItem, checked, clearIndeterminate = false) {
