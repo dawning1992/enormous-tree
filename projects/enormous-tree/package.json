@@ -1,6 +1,6 @@
 {
     "name": "enormous-tree",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "scripts": {
         "build": "../../node_modules/.bin/tsc -p tsconfig.schematics.json && npm run copy:worker",
         "copy:schemas": "cp --parents schematics/*/schema.json ../../dist/enormous-tree/",

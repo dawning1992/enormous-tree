@@ -8,7 +8,7 @@ var groupMap = Object.create(null),
         uncheckGroupAndUncheckAllChild: true,
         uncheckChildEffectParentGroup: true
     };
-self.onmessage = function(event) {
+self.onmessage = function (event) {
     var e = event.data;
     if (e) {
         var data = JSON.parse(e);
@@ -22,7 +22,11 @@ self.onmessage = function(event) {
 };
 
 
-var handleAllData = function(data) {
+var handleAllData = function (data) {
+    groupMap = Object.create(null);
+    treeitemMap = Object.create(null);
+    treeitemSelectedMap = Object.create(null);
+    groupSelectedMap = Object.create(null);
     var t0 = new Date().getTime();
     alias = data.alias;
     behavior = data.behavior;
@@ -44,7 +48,7 @@ var handleAllData = function(data) {
 
 
 function createTreeitemCheckedMap(arr) {
-    (arr || []).forEach(function(id) {
+    (arr || []).forEach(function (id) {
         treeitemSelectedMap[id] = true;
     });
 }
@@ -52,17 +56,17 @@ function createTreeitemCheckedMap(arr) {
 
 // 计算Group子节点个数
 function calculateChildNodeCount() {
-    var countGroupChild = function(group) {
+    var countGroupChild = function (group) {
         var childCount = 0;
         if (Array.isArray(group.childGroupIds) && group.childGroupIds.length > 0) {
             childCount = group.childGroupIds.length;
-            childCount = group.childGroupIds.reduce(function(pre, x) {
+            childCount = group.childGroupIds.reduce(function (pre, x) {
                 return pre + countGroupChild(groupMap[x]);
             }, childCount);
         }
         return childCount;
     }
-    var groupAddItem = function(groupId) {
+    var groupAddItem = function (groupId) {
         var group = groupMap[groupId];
         if (group) {
             group.totalChildCount++;
@@ -71,14 +75,14 @@ function calculateChildNodeCount() {
             }
         }
     }
-    Object.keys(groupMap).forEach(function(groupId) {
+    Object.keys(groupMap).forEach(function (groupId) {
         var group = groupMap[groupId];
         groupMap[groupId].totalChildCount = countGroupChild(group);
     });
-    Object.keys(treeitemMap).forEach(function(treeitemId) {
+    Object.keys(treeitemMap).forEach(function (treeitemId) {
         var treeitem = treeitemMap[treeitemId];
         if (Array.isArray(treeitem.groupIds) && treeitem.groupIds.length > 0) {
-            treeitem.groupIds.forEach(function(groupId) {
+            treeitem.groupIds.forEach(function (groupId) {
                 groupAddItem(groupId);
             });
         }
@@ -88,14 +92,14 @@ function calculateChildNodeCount() {
 
 // 创建treeitem映射
 function createTreeitemMap(treeitemList) {
-    (treeitemList || []).forEach(function(treeitem) {
+    (treeitemList || []).forEach(function (treeitem) {
         handleAlias(treeitem, alias, 'treeItemId');
         handleAlias(treeitem, alias, 'treeItemName');
         handleAlias(treeitem, alias, 'groupIds');
         treeitem.checked = this.treeitemSelectedMap[treeitem.treeItemId] === true;
         treeitemMap[treeitem.treeItemId] = treeitem;
         if (Array.isArray(treeitem.groupIds) && treeitem.groupIds.length > 0) {
-            treeitem.groupIds.forEach(function(groupId) {
+            treeitem.groupIds.forEach(function (groupId) {
                 var group = groupMap[groupId];
                 if (group) {
                     if (group.childTreeitemIds == null) {
@@ -111,24 +115,24 @@ function createTreeitemMap(treeitemList) {
 
 
 function createGroupCheckedMap(groups) {
-    (groups || []).forEach(function(_) {
+    (groups || []).forEach(function (_) {
         groupSelectedMap[_] = true;
     });
 }
 
 function calculateCheckCount() {
-    Object.keys(treeitemMap).forEach(function(treeItemId) {
+    Object.keys(treeitemMap).forEach(function (treeItemId) {
         var treeitem = treeitemMap[treeItemId];
         if (treeitem.checked) {
             if (Array.isArray(treeitem.groupIds) && treeitem.groupIds.length > 0) {
-                treeitem.groupIds.forEach(function(parentGroupId) {
+                treeitem.groupIds.forEach(function (parentGroupId) {
                     updateParentCheckNum(parentGroupId, 1);
                 })
             }
         }
     });
     if (behavior.checkGroupAndCheckAllChild) {
-        Object.keys(groupSelectedMap).forEach(function(_) {
+        Object.keys(groupSelectedMap).forEach(function (_) {
             checkGroup(_);
         });
     }
@@ -143,13 +147,13 @@ function checkGroup(groupId) {
         }
         var childGroupIds = group.childGroupIds;
         if (Array.isArray(childGroupIds) && childGroupIds.length > 0) {
-            childGroupIds.forEach(function(_) {
+            childGroupIds.forEach(function (_) {
                 checkGroup(_);
             });
         }
         var childTreeitemIds = group.childTreeitemIds;
         if (Array.isArray(childTreeitemIds) && childTreeitemIds.length > 0) {
-            childTreeitemIds.forEach(function(_) {
+            childTreeitemIds.forEach(function (_) {
                 checkTreeItem(_);
             });
         }
@@ -163,7 +167,7 @@ function checkTreeItem(treeitemId) {
         if (treeItem.checked == false) {
             treeItem.checked = true;
             if (Array.isArray(treeItem.groupIds) && treeItem.groupIds.length > 0) {
-                treeItem.groupIds.forEach(function(parentGroupId) {
+                treeItem.groupIds.forEach(function (parentGroupId) {
                     updateParentCheckNum(parentGroupId, 1);
                 })
             }
@@ -199,7 +203,7 @@ function updateParentCheckNum(parentGroupId, num) {
 function createGroupMap(groupList) {
     var parentMap = Object.create(null);
     var childGroupIdCol = [];
-    (groupList || []).forEach(function(groupItem) {
+    (groupList || []).forEach(function (groupItem) {
         handleAlias(groupItem, alias, 'groupId');
         handleAlias(groupItem, alias, 'groupName');
         handleAlias(groupItem, alias, 'childGroupIds');
@@ -212,7 +216,7 @@ function createGroupMap(groupList) {
         groupItem.isGroup = true;
         groupMap[groupItem.groupId] = groupItem;
         if (Array.isArray(groupItem.childGroupIds) && groupItem.childGroupIds.length > 0) {
-            groupItem.childGroupIds.forEach(function(childGroupId) {
+            groupItem.childGroupIds.forEach(function (childGroupId) {
                 childGroupIdCol.push(childGroupId)
                 parentMap[childGroupId] = groupItem.groupId;
             });
@@ -220,7 +224,7 @@ function createGroupMap(groupList) {
             delete groupItem.childGroupIds;
         }
     });
-    (childGroupIdCol).forEach(function(childGroupId) {
+    (childGroupIdCol).forEach(function (childGroupId) {
         var childGroup = groupMap[childGroupId];
         if (childGroup) {
             childGroup.parentGroupId = parentMap[childGroupId];
