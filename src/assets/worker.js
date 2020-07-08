@@ -131,11 +131,10 @@ function calculateCheckCount() {
             }
         }
     });
-    if (behavior.checkGroupAndCheckAllChild) {
-        Object.keys(groupSelectedMap).forEach(function (_) {
-            checkGroup(_);
-        });
-    }
+    Object.keys(groupSelectedMap).forEach(function (_) {
+        checkGroup(_);
+    });
+
 }
 
 function checkGroup(groupId) {
@@ -145,17 +144,19 @@ function checkGroup(groupId) {
             group.checked = true;
             updateParentCheckNum(group.parentGroupId, 1);
         }
-        var childGroupIds = group.childGroupIds;
-        if (Array.isArray(childGroupIds) && childGroupIds.length > 0) {
-            childGroupIds.forEach(function (_) {
-                checkGroup(_);
-            });
-        }
-        var childTreeitemIds = group.childTreeitemIds;
-        if (Array.isArray(childTreeitemIds) && childTreeitemIds.length > 0) {
-            childTreeitemIds.forEach(function (_) {
-                checkTreeItem(_);
-            });
+        if (behavior.checkGroupAndCheckAllChild && behavior.uncheckChildEffectParentGroup) {
+            var childGroupIds = group.childGroupIds;
+            if (Array.isArray(childGroupIds) && childGroupIds.length > 0) {
+                childGroupIds.forEach(function (_) {
+                    checkGroup(_);
+                });
+            }
+            var childTreeitemIds = group.childTreeitemIds;
+            if (Array.isArray(childTreeitemIds) && childTreeitemIds.length > 0) {
+                childTreeitemIds.forEach(function (_) {
+                    checkTreeItem(_);
+                });
+            }
         }
     }
 }
